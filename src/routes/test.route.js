@@ -5,7 +5,7 @@ import { testController } from '../controllers/test.controller.js';
 const router = express.Router();
 
 // routes
-router.route('/test').get(testController);
+router.route('/test').post(testController);
 
 // export
 export default router;

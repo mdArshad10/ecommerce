@@ -35,7 +35,7 @@ const userSchema = new mongoose.Schema({
     },
     profilePic:{
         type:String, // upload through 3rd party app like cloudinary
-        required:[true,'plz add the addresss']
+        // required:[true,'plz add the addresss']
     },
 })
 

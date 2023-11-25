@@ -1,37 +1,35 @@
 // import packages
 import express from 'express';
-import dotenv from 'dotenv';
 import morgan from 'morgan';
 import helmet from 'helmet';
 import cors from 'cors';
-import cookieparser from 'cookie-parser'
-
+import cookieparser from 'cookie-parser';
+import bodyParser from 'body-parser'
 
 // rest object
 const app = express();
 
-// dotenv config
-dotenv.config({ path: './.env' });
-const port = process.env.PORT || 3000;
-
 // middleware
+app.use(express.json());
+app.use(express.urlencoded({ extended: true, limit: '16kb' }));
 app.use(
 	cors({
 		origin: process.env.ORIGIN,
-		credentials: true, //* ???
-	})
+		credentials: true,
+	}),
 );
-app.use(express.json({limit:"16kb"}));
-app.use(express.urlencoded({ extended: true,limit:"16kb" }));
 app.use(helmet());
 app.use(morgan('dev'));
-app.use(express.static("public"))
-app.use(cookieparser())
+app.use(express.static('public'));
+app.use(cookieparser());
 
 // import routers
-import testRoutes from './routes/test.route.js'
+import testRoutes from './routes/test.route.js';
+import userRoutes from './routes/user.route.js';
 
 // routes
-app.use('/api/v1', testRoutes)
+app.use('/api/v1', testRoutes);
+app.use('/api/v1', userRoutes);
+// app.use('/')
 
-export default app
+export default app;
