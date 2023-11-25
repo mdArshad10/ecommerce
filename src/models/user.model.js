@@ -39,4 +39,18 @@ const userSchema = new mongoose.Schema({
     },
 })
 
+// pre are hook present in mongoose
+// and it is a middleware so we pass next as argumnet
+// it is make my password hash
+userSchema.pre("save",async function (next) {
+    if(!this.isModified("password")) return next()
+    this.password = await bcrypt.hash(this.password, 10)
+    next()
+})
+
+// we inject the our own method in userSchema for checking the password
+userSchema.methods.isMatchPassword = async function(userEnteredPassword){
+    return await bcrypt.compare(userEnteredPassword, this.password)
+}
+
 export const User = mongoose.model('User', userSchema);

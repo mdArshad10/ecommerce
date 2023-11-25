@@ -42,14 +42,14 @@ const registerUser = AsyncHandler(async (req, res, next) => {
 	});
 
 	// 7. check your is create or not and remove the password
-	const userCreated = await User.findById(newUser._id).select(' -password');
+	const userCreated = await User.findById(newUser._id).select("-password");
 
 	if (!userCreated) throw new ErrorHandler(402, 'user not create');
 
 	// 8. send the request
 		res
 			.status(201)
-			.json(new ApiResponse(200, newUser, 'registered user successfully'));
+			.json(new ApiResponse(200, userCreated, 'registered user successfully'));
 });
 
 // @Desc: for login the user
