@@ -87,4 +87,12 @@ const loginUser = AsyncHandler(async (req, res, next) => {
 	.json(new ApiResponse(200,{userData,token},"your are login successfully"));
 });
 
-export { registerUser, loginUser };
+// @Desc: get detail of a particualr user
+// @Method: POST    api/v1/user/profile
+// @Access: private
+const getUserProfile = AsyncHandler(async(req,res,next)=>{
+	const existUser = req.user
+	res.status(200).json( new ApiResponse(200, existUser))
+})
+
+export { registerUser, loginUser, getUserProfile };
