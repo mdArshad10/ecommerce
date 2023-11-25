@@ -1,37 +1,25 @@
 // import packages
-import express from 'express';
+import app from './app.js'
 import dotenv from 'dotenv';
-import morgan from 'morgan';
-import helmet from 'helmet';
-import cors from 'cors';
 import colors from 'colors';
-
-// import routers
-import testRoutes from './routes/test.route.js'
-
-// rest object
-const app = express();
+import { connectionDB } from './db/db.connection.js';
 
 // dotenv config
 dotenv.config({ path: './.env' });
 const port = process.env.PORT || 3000;
 
-// middleware
-app.use(
-	cors({
-		origin: process.env.ORIGIN,
-		credentials: true, //* ???
+// db Connection
+connectionDB().then(()=>{
+	// listen
+	app.listen(port, () => {
+		console.log(`the server is running at ${port} `.rainbow);
+	});
+	app.on('erorr',(error)=>{
+		console.log('the ERROR is =>'.bgRed, error);
+		throw error
 	})
-);
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-app.use(helmet());
-app.use(morgan('dev'));
+}).catch((error)=>{
+	console.log('the ERROR  is =>'.bgRed, error);
+	throw error
+})
 
-// routes
-app.use('/api/v1', testRoutes)
-
-// listen
-app.listen(port, () => {
-	console.log(`the server is running at ${port} `.rainbow);
-});
