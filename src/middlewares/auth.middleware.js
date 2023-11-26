@@ -12,7 +12,7 @@ const isAuth = async(req,res,next)=>{
     const decode = jwt.decode(token, process.env.ACCESS_TOKEN_SECRET_KEY)
 
     // 4. token is valid or not
-    const existUser = await User.findById(decode._id).select("-password")
+    const existUser = await User.findById(decode._id)
     if(!existUser) throw new ErrorHandler(400, "invald token")
 
     // 5. pass the token data from "req" to one middleware to another middleware

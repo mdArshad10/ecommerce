@@ -63,7 +63,7 @@ const loginUser = AsyncHandler(async (req, res, next) => {
 	if (!email || !password) throw new ErrorHandler(404, 'plz add all the field');
 
 	// 3.check the email is registered in database
-	const existUser = await User.findOne({email});
+	const existUser = await User.findOne({ email });
 	if (!existUser)
 		throw new ErrorHandler(404, 'invalid crediental or  not exist');
 
@@ -74,32 +74,78 @@ const loginUser = AsyncHandler(async (req, res, next) => {
 	}
 
 	// 6. create a seesion(token) in backend
-	const token = existUser.generateToken()
+	const token = existUser.generateToken();
 
 	// 7.remove the password
-	const userData = await User.findOne({email}).select("-password")
+	const userData = await User.findOne({ email }).select('-password');
 	// 8. send the res
-	res.status(200)
-	.cookie('token', token, {
-		expires: new Date(Date.now() + 900000),
-		httpOnly: true
-	  })
-	.json(new ApiResponse(200,{userData,token},"your are login successfully"));
+	res
+		.status(200)
+		.cookie('token', token, {
+			expires: new Date(Date.now() + 900000),
+			httpOnly: true,
+		})
+		.json(
+			new ApiResponse(200, { userData, token }, 'your are login successfully'),
+		);
 });
 
 // @Desc: get detail of a particualr user
 // @Method: GET    api/v1/user/profile
 // @Access: private
-const getUserProfile = AsyncHandler(async(req,res,next)=>{
-	const existUser = req.user
-	res.status(200).json( new ApiResponse(200, existUser))
-})
+const getUserProfile = AsyncHandler(async (req, res, next) => {
+	const existUser = await User.findById(req.user._id).select('-password');
+	res.status(200).json(new ApiResponse(200, existUser));
+});
 
 // @Desc: logout the user
 // @Method: GET    api/v1/user/logout
 // @Access: private
-const logoutUser = AsyncHandler(async(req,res,next)=>{
-	res.status(200).clearCookie("token").json(new ApiResponse(200,""))
-})
+const logoutUser = AsyncHandler(async (req, res, next) => {
+	res.status(200).clearCookie('token').json(new ApiResponse(200, ''));
+});
 
-export { registerUser, loginUser, getUserProfile,logoutUser };
+// @Desc: update the user
+// @Method: PUT    api/v1/user/profile-update
+// @Access: private
+const updateUserProfile = AsyncHandler(async (req, res, next) => {});
+
+// @Desc: update user's password
+// @Method: PUT    api/v1/user/update-password
+// @Access: private
+const updateUserPassword = AsyncHandler(async (req, res, next) => {
+	// 1. get old and new password from frontend
+	const { oldPassword, newPassword } = req.body;
+
+	// 2. check validation - oldpassword and newPassword
+	if (!oldPassword || !newPassword)
+		throw new ErrorHandler(400, 'fill all the field');
+
+	
+	// const existUser = await User.findById(req.user._id);
+	const existUser = req.user;
+
+	// 3. check the oldpassword is correct or not
+	const isPasswordMatch = await existUser.isPasswordCorrect(oldPassword);
+	if (!isPasswordMatch) {
+		throw new ErrorHandler(404, 'invalid email or password');
+	}
+	//4. oldpassword or newpassword must be different
+	if(oldPassword === newPassword) throw new ErrorHandler(400,"both must be different")
+
+	existUser.password = newPassword;
+
+	await existUser.save()
+	res
+		.status(200)
+		.json(new ApiResponse(200, "",'password update successfully'));
+});
+
+export {
+	registerUser,
+	loginUser,
+	getUserProfile,
+	logoutUser,
+	updateUserProfile,
+	updateUserPassword,
+};
