@@ -88,11 +88,18 @@ const loginUser = AsyncHandler(async (req, res, next) => {
 });
 
 // @Desc: get detail of a particualr user
-// @Method: POST    api/v1/user/profile
+// @Method: GET    api/v1/user/profile
 // @Access: private
 const getUserProfile = AsyncHandler(async(req,res,next)=>{
 	const existUser = req.user
 	res.status(200).json( new ApiResponse(200, existUser))
 })
 
-export { registerUser, loginUser, getUserProfile };
+// @Desc: logout the user
+// @Method: GET    api/v1/user/logout
+// @Access: private
+const logoutUser = AsyncHandler(async(req,res,next)=>{
+	res.status(200).clearCookie("token").json(new ApiResponse(200,""))
+})
+
+export { registerUser, loginUser, getUserProfile,logoutUser };

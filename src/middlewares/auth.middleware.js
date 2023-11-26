@@ -5,7 +5,6 @@ import { User } from "../models/user.model.js";
 const isAuth = async(req,res,next)=>{
     //1. take token from cookies
     const {token} = req.cookies
-
     // 2. validate token - token is not empty
     if(!token) throw new ErrorHandler(404,"token is not exist")
 
