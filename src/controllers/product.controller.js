@@ -70,7 +70,11 @@ const updateParticularProduct = AsyncHandler(async (req, res, next) => {
 // @Method: [DELETE]    api/v1/product/:id(kdfalkdflakdfl)
 // @Access: private
 const deleteParticularProduct = AsyncHandler(async (req, res, next) => {
-	res.status(200).json({ message: 'delete a particular product' });
+	const {id} = req.params;
+	// here we simply delete but when i add cloudinary then when i delete a product is images also delete form cloudinary
+	const existProduct = await Product.findByIdAndDelete(id);
+	if(!existProduct) throw new ErrorHandler(404,"product is not found")
+	res.status(200).json({message:"product is deleted",success:true})
 });
 
 export {
