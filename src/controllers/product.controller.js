@@ -26,7 +26,7 @@ const createProduct = AsyncHandler(async (req, res, next) => {
 
 // @Desc: get all the product
 // @Method: [GET]    api/v1/product/getAllProduct
-// @Access: private
+// @Access: public
 const getAllProduct = AsyncHandler(async (req, res, next) => {
 	const products = await Product.find({});
 
@@ -52,7 +52,18 @@ const getParticularProduct = AsyncHandler(async (req, res, next) => {
 // @Method: [PUT]    api/v1/product/:id(kdfalkdflakdfl)
 // @Access: private
 const updateParticularProduct = AsyncHandler(async (req, res, next) => {
-	res.status(200).json({ message: 'update a particular product' });
+	const {id} = req.params;
+	const existProduct = await Product.findById(id)
+	if(!existProduct) throw new ErrorHandler(404, "product is not found")
+	const {name, description, price, stock, category} = req.body;
+	if(name) existProduct.name = name
+	if(description) existProduct.description = description
+	if(price) existProduct.price = price
+	if(stock) existProduct.stock = stock
+	if(category) existProduct.category =category
+
+	existProduct.save();
+	res.status(200).json({message:"product update successfully", success:true});
 });
 
 // @Desc: delete a product
