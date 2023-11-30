@@ -4,7 +4,6 @@ import morgan from 'morgan';
 import helmet from 'helmet';
 import cors from 'cors';
 import cookieparser from 'cookie-parser';
-import bodyParser from 'body-parser'
 
 // rest object
 const app = express();
@@ -27,10 +26,12 @@ app.use(cookieparser());
 import testRoutes from './routes/test.route.js';
 import userRoutes from './routes/user.route.js';
 import productRoutes from './routes/product.route.js'
+import categoryRoutes from './routes/category.route.js'
 
 // routes
 app.use('/api/v1', testRoutes);
 app.use('/api/v1', userRoutes);
 app.use('/api/v1', productRoutes)
+app.use('/api/v1', categoryRoutes)
 
 export default app;
