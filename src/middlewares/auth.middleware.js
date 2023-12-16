@@ -2,6 +2,7 @@ import jwt from "jsonwebtoken";
 import ErrorHandler from "../utils/ErrorHandler.js";
 import { User } from "../models/user.model.js";
 
+// FOR USER
 const isAuth = async(req,res,next)=>{
     //1. take token from cookies
     const {token} = req.cookies
@@ -20,4 +21,10 @@ const isAuth = async(req,res,next)=>{
     next()
 }
 
-export {isAuth}
+// FOR ADMIN
+const isAdmin = async(req,res,next)=>{
+    if(req.user.role!=="admin") throw new ErrorHandler(403,"your are not admin")
+    next();
+}
+
+export {isAuth, isAdmin}

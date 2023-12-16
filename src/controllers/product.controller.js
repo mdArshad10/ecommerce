@@ -2,6 +2,7 @@ import { AsyncHandler } from '../utils/AsyncHandler.js';
 import { Product } from '../models/product.model.js';
 import { ApiResponse } from '../utils/ApiResponse.js';
 import ErrorHandler from '../utils/ErrorHandler.js';
+import {fileUpdate, fileUploading} from '../utils/cloudinary.js'
 
 // @Desc: create the product
 // @Method: [POST]    api/v1/product/createNewProduct
@@ -11,12 +12,18 @@ const createProduct = AsyncHandler(async (req, res, next) => {
 	if (!name || !description || !price || !stock ) // not checking the category
 		throw new ErrorHandler(400, 'plz fill all the field');
 
+	const file = req.file;
+	if(!file) throw new ErrorHandler(404,"file doesn't exist")
+
+	const {url,public_id}=await fileUploading(file.path)
+	const image = {url,public_id}
 	// file handling adding
 	const newProduct = await Product.create({
 		name,
 		description,
 		price,
 		stock,
+		images:[image]
 	});
 
 	res
@@ -37,7 +44,7 @@ const getAllProduct = AsyncHandler(async (req, res, next) => {
 
 // @Desc: get a product
 // @Method: [GET]    api/v1/product/:id(kdfalkdflakdfl)
-// @Access: private
+// @Access: public
 const getParticularProduct = AsyncHandler(async (req, res, next) => {
 	const { id } = req.params;
 	const existProduct = await Product.findById(id);
@@ -55,12 +62,12 @@ const updateParticularProduct = AsyncHandler(async (req, res, next) => {
 	const {id} = req.params;
 	const existProduct = await Product.findById(id)
 	if(!existProduct) throw new ErrorHandler(404, "product is not found")
-	const {name, description, price, stock, category} = req.body;
+	const {name, description, price, stock, categroy} = req.body;
 	if(name) existProduct.name = name
 	if(description) existProduct.description = description
 	if(price) existProduct.price = price
 	if(stock) existProduct.stock = stock
-	if(category) existProduct.category =category
+	if(categroy) existProduct.categroy =categroy
 
 	existProduct.save();
 	res.status(200).json({message:"product update successfully", success:true});

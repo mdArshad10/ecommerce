@@ -6,6 +6,6 @@ const categorySchema = new mongoose.Schema({
 		required: [true, 'plz add the categroy'],
 		enum: ['laptop', 'bags', 'phone'],
 	},
-});
+},{timestamps:true});
 
-export default Categroy = mongoose.model('Categroy', categorySchema);
+export const Categroy = mongoose.model('Categroy', categorySchema);

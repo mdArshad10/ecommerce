@@ -13,12 +13,32 @@ const fileUploading = async (localfilePath)=>{
        const resp = await cloudinary.uploader.upload(localfilePath,{resource_type:"auto"})
        console.log(`the file is upload with the name of ${resp.original_filename}`.bgMagenta);
        fs.unlinkSync(localfilePath) // unlike the file after the complete file uploading
-       return resp.url
+       return resp
     } catch (error) {
         fs.unlinkSync(localfilePath)
         return null
     }
 }
+
+const fileUpdate = async(localfilePath, publicId)=>{
+    try {
+        if(!localfilePath) return null
+        // destroy the file
+        await cloudinary.uploader.destroy(publicId)
+
+        // new upload
+        const resp = await cloudinary.uploader.upload(localfilePath,{resource_type:"auto"})
+
+       console.log(`the file is upload with the name of ${resp.original_filename}`.bgMagenta);
+       fs.unlinkSync(localfilePath) // unlike the file after the complete file uploading
+       return resp
+    } catch (error) {
+        fs.unlinkSync(localfilePath)
+        return null
+    }
+}
+
+export {fileUploading, fileUpdate }
 
 
 

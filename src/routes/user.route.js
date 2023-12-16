@@ -3,26 +3,32 @@ import {
 	loginUser,
 	registerUser,
 	getUserProfile,
-    logoutUser,
-    updateUserProfile,
-    updateUserPassword
+	logoutUser,
+	updateUserProfile,
+	updateUserPassword,
 } from '../controllers/user.controller.js';
 import { isAuth } from '../middlewares/auth.middleware.js';
+import { singleUpload } from '../middlewares/multer.middleware.js';
 
 // router obj
 const router = Router();
 
 //routes
+// for registration
 router.route('/user/register').post(registerUser);
+// for login
 router.route('/user/login').post(loginUser);
+// get profile
 router.route('/user/profile').get(isAuth, getUserProfile);
+// logout
 router.route('/user/logout').get(isAuth, logoutUser);
 
-// TODO: it is not completed
 // update the user detail
-// route.route('/user/profile-update').put(isAuth, updateUserProfile)
+router
+	.route('/user/profile-update')
+	.put(isAuth, singleUpload, updateUserProfile);
 
 // update the password
-router.route('/user/update-password').put(isAuth, updateUserPassword)
+router.route('/user/update-password').put(isAuth, updateUserPassword);
 
 export default router;
