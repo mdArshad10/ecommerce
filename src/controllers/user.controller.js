@@ -46,7 +46,7 @@ const registerUser = AsyncHandler(async (req, res, next) => {
 	// 6. send the request
 	res
 		.status(201)
-		.json(new ApiResponse(200, userCreated, 'registered user successfully'));
+		.json({ messsage: 'your are registerd', user: userCreated, success: true });
 });
 
 // @Desc: for login the user
@@ -54,14 +54,13 @@ const registerUser = AsyncHandler(async (req, res, next) => {
 // @Access: public
 const loginUser = AsyncHandler(async (req, res, next) => {
 	// 1. take the data from frontend
-	const { username, email, password } = req.body;
+	const { email, password } = req.body;
 
 	// 2. check the validation
-	if (!username || !email || !password)
-		throw new ErrorHandler(404, 'plz add all the field');
+	if (!email || !password) throw new ErrorHandler(404, 'plz add all the field');
 
 	// 3.check the email is registered in database
-	const existUser = await User.findOne({ $or: [{ email, username }] });
+	const existUser = await User.findOne({email });
 	if (!existUser)
 		throw new ErrorHandler(404, 'invalid crediental or  not exist');
 
@@ -151,7 +150,7 @@ const updateUserPassword = AsyncHandler(async (req, res, next) => {
 	await existUser.save();
 	res
 		.status(200)
-		.json(new ApiResponse(200, '', 'password update successfully'));
+		.json({message:"password update successfully",success:true});
 });
 
 export {

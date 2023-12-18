@@ -14,21 +14,21 @@ import { singleUpload } from '../middlewares/multer.middleware.js';
 const router = Router();
 
 //routes
-// for registration
-router.route('/user/register').post(registerUser);
-// for login
-router.route('/user/login').post(loginUser);
-// get profile
-router.route('/user/profile').get(isAuth, getUserProfile);
+// for registration ✅
+router.route('/register').post(registerUser);
+// for login ✅
+router.route('/login').post(loginUser);
+// get profile ✅
+router.route('/profile').get(isAuth, getUserProfile);
 // logout
-router.route('/user/logout').get(isAuth, logoutUser);
+router.route('/logout').get(isAuth, logoutUser);
 
 // update the user detail
 router
-	.route('/user/profile-update')
+	.route('/profile-update')
 	.put(isAuth, singleUpload, updateUserProfile);
 
-// update the password
-router.route('/user/update-password').put(isAuth, updateUserPassword);
+// update the password ✅
+router.route('/update-password').put(isAuth, updateUserPassword);
 
 export default router;

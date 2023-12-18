@@ -32,10 +32,9 @@ import orderRoutes from './routes/order.route.js';
 
 // routes
 app.use('/api/v1', testRoutes);
-app.use('/api/v1', userRoutes);
+app.use('/api/v1/user', userRoutes);
 app.use('/api/v1', productRoutes);
 app.use('/api/v1', categroyRoutes);
 app.use('/api/v1', orderRoutes);
 
-app.use(FileNotFound);
 export default app;
