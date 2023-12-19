@@ -60,7 +60,7 @@ const loginUser = AsyncHandler(async (req, res, next) => {
 	if (!email || !password) throw new ErrorHandler(404, 'plz add all the field');
 
 	// 3.check the email is registered in database
-	const existUser = await User.findOne({email });
+	const existUser = await User.findOne({ email });
 	if (!existUser)
 		throw new ErrorHandler(404, 'invalid crediental or  not exist');
 
@@ -80,8 +80,6 @@ const loginUser = AsyncHandler(async (req, res, next) => {
 		.status(200)
 		.cookie('token', token, {
 			expires: new Date(Date.now() + 900000),
-			httpOnly: true,
-			secure: true,
 		})
 		.json(
 			new ApiResponse(200, { userData, token }, 'your are login successfully'),
@@ -119,7 +117,8 @@ const updateUserProfile = AsyncHandler(async (req, res, next) => {
 	if (country) user.country = country;
 	if (phone) user.phone = phone;
 
-	res.status(202).json(new ApiResponse(202, null, 'data update successfully'));
+	await user.save();
+	res.status(202).json({ message: 'update successfully', user, success: true });
 });
 
 // @Desc: update user's password
@@ -150,7 +149,28 @@ const updateUserPassword = AsyncHandler(async (req, res, next) => {
 	await existUser.save();
 	res
 		.status(200)
-		.json({message:"password update successfully",success:true});
+		.json({ message: 'password update successfully', success: true });
+});
+
+// @Desc: update user's profile pic
+// @Method: PUT    api/v1/user/updateProfilePicture
+// @Access: private
+const updateUserProfilePic = AsyncHandler(async (req, res, next) => {
+	const user = req.user;
+	const file = req.file;
+	console.log(file);
+	if (!file) throw new ErrorHandler(404, 'file not present');
+
+	const fileDetail = await fileUploading(file.path);
+	console.log(fileDetail);
+	user.profilePic = { public_id: fileDetail.public_id, url: fileDetail.url };
+
+	await user.save();
+	res.status(200).json({
+		message: 'profile update successfully',
+		data: user,
+		success: true,
+	});
 });
 
 export {
@@ -160,4 +180,5 @@ export {
 	logoutUser,
 	updateUserProfile,
 	updateUserPassword,
+	updateUserProfilePic,
 };

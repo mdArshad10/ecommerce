@@ -6,6 +6,7 @@ import {
 	logoutUser,
 	updateUserProfile,
 	updateUserPassword,
+	updateUserProfilePic
 } from '../controllers/user.controller.js';
 import { isAuth } from '../middlewares/auth.middleware.js';
 import { singleUpload } from '../middlewares/multer.middleware.js';
@@ -23,12 +24,17 @@ router.route('/profile').get(isAuth, getUserProfile);
 // logout
 router.route('/logout').get(isAuth, logoutUser);
 
-// update the user detail
+// update the user detail ✅
 router
 	.route('/profile-update')
-	.put(isAuth, singleUpload, updateUserProfile);
+	.put(isAuth, updateUserProfile);
 
 // update the password ✅
 router.route('/update-password').put(isAuth, updateUserPassword);
+
+// update the profile pic
+router.route('/updateProfilePicture')
+	.put(isAuth ,singleUpload ,updateUserProfilePic)
+
 
 export default router;
