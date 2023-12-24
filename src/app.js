@@ -5,6 +5,7 @@ import helmet from 'helmet';
 import cors from 'cors';
 import cookieparser from 'cookie-parser';
 import { FileNotFound } from './middlewares/filenotfound.middleware.js';
+import { corsOrigin } from './constent.js';
 
 // rest object
 const app = express();
@@ -14,7 +15,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true, limit: '16kb' }));
 app.use(
 	cors({
-		origin: process.env.ORIGIN,
+		origin: corsOrigin,
 		credentials: true,
 	}),
 );

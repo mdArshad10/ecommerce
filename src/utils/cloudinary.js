@@ -1,25 +1,29 @@
 import { v2 as cloudinary } from 'cloudinary';
 
+import {
+	cloudinaryApiKey,
+	cloudinaryName,
+	cloudinaryApiSecret,
+} from '../constent.js';
+
 cloudinary.config({
-	cloud_name: process.env.CLOUDINARY_NAME,
-	api_key: process.env.CLOUDINARY_API_KEY,
-	api_secret: process.env.CLOUDINARY_API_SECRET,
+	cloud_name: cloudinaryName,
+	api_key: cloudinaryApiKey,
+	api_secret: cloudinaryApiSecret,
 });
 
 const fileUploading = async (localfilePath) => {
 	try {
-		console.log(`the localfilePath ${localfilePath}`);
+
 		if (!localfilePath) return null;
+
 		const resp = await cloudinary.uploader.upload(localfilePath, {
 			resource_type: 'auto',
 		});
-		console.log(`the respose of file is ${resp}`);
-		console.log(
-			`the file is upload with the name of ${resp.original_filename}`,
-		);
+		
 		return resp;
 	} catch (error) {
-		console.log('the error in cloudinary');
+		console.log(error);
 		return null;
 	}
 };
@@ -41,6 +45,7 @@ const fileUpdate = async (localfilePath, publicId) => {
 
 		return resp;
 	} catch (error) {
+		console.log(error);
 		return null;
 	}
 };

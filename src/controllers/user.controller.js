@@ -4,7 +4,7 @@ import ErrorHandler from '../utils/ErrorHandler.js';
 import { ApiResponse } from '../utils/ApiResponse.js';
 import { fileUploading } from '../utils/cloudinary.js';
 
-// @Desc: for register the user
+// @Desc: for register the user 
 // @Method: POST    api/v1/user/register
 // @Access: public
 const registerUser = AsyncHandler(async (req, res, next) => {
@@ -13,19 +13,16 @@ const registerUser = AsyncHandler(async (req, res, next) => {
 
 	//2. check the filed
 	if (
-		!username ||
-		!email ||
-		!password ||
-		!address ||
-		!city ||
-		!country ||
-		!phone
+		[username, email, password, address, city, country, phone].some(
+			(item) => item.trim === '',
+		)
 	) {
 		throw new ErrorHandler(404, 'plz fill all the field');
 	}
+
 	// 3. check the any email or username is already present or not
-	const existUser = await User.findOne({ $or: [{ email, username }] });
-	if (existUser) throw new ErrorHandler(400, 'your already exist');
+	const existUser = await User.findOne({ $or: [{ email }, { username }] });
+	if (existUser) throw new ErrorHandler(400, 'user already exist');
 
 	// 4. create a user object
 	const newUser = await User.create({
@@ -46,21 +43,22 @@ const registerUser = AsyncHandler(async (req, res, next) => {
 	// 6. send the request
 	res
 		.status(201)
-		.json({ messsage: 'your are registerd', user: userCreated, success: true });
+		.json(new ApiResponse(201, { user: userCreated }, 'your are registerd'));
 });
 
-// @Desc: for login the user
+// @Desc: for login the user 
 // @Method: POST    api/v1/user/login
 // @Access: public
 const loginUser = AsyncHandler(async (req, res, next) => {
 	// 1. take the data from frontend
-	const { email, password } = req.body;
+	const { email, password, username } = req.body;
 
 	// 2. check the validation
-	if (!email || !password) throw new ErrorHandler(404, 'plz add all the field');
+	if (!(email || username) || !password)
+		throw new ErrorHandler(404, 'plz add all the field');
 
 	// 3.check the email is registered in database
-	const existUser = await User.findOne({ email });
+	const existUser = await User.findOne({ $or: [{ email }, { username }] });
 	if (!existUser)
 		throw new ErrorHandler(404, 'invalid crediental or  not exist');
 
@@ -74,13 +72,16 @@ const loginUser = AsyncHandler(async (req, res, next) => {
 	const token = existUser.generateToken();
 
 	// 7.remove the password
-	const userData = await User.findOne({ email }).select('-password');
+	const userData = await User.findById(existUser._id).select('-password');
+
 	// 8. send the res
+	const option = {
+		httpOnly: true,
+		secure: true,
+	};
 	res
 		.status(200)
-		.cookie('token', token, {
-			expires: new Date(Date.now() + 900000),
-		})
+		.cookie('token', token, option)
 		.json(
 			new ApiResponse(200, { userData, token }, 'your are login successfully'),
 		);
@@ -90,15 +91,21 @@ const loginUser = AsyncHandler(async (req, res, next) => {
 // @Method: GET    api/v1/user/profile
 // @Access: private
 const getUserProfile = AsyncHandler(async (req, res, next) => {
-	const existUser = await User.findById(req.user._id).select('-password');
-	res.status(200).json(new ApiResponse(200, existUser));
+	res.status(200).json(new ApiResponse(200, { user: req.user }));
 });
 
 // @Desc: logout the user
 // @Method: GET    api/v1/user/logout
 // @Access: private
 const logoutUser = AsyncHandler(async (req, res, next) => {
-	res.status(200).clearCookie('token').json(new ApiResponse(200, ''));
+	const option = {
+		httpOnly: true,
+		secure: true,
+	};
+	res
+		.status(200)
+		.clearCookie('token', option)
+		.json(new ApiResponse(200, {}, 'your are logout successfully'));
 });
 
 // @Desc: update the user
@@ -106,19 +113,22 @@ const logoutUser = AsyncHandler(async (req, res, next) => {
 // @Access: private
 const updateUserProfile = AsyncHandler(async (req, res, next) => {
 	// get user
-	const user = req.user;
+	const user = await User.findById(req.user?._id).select('-password');
 
-	const { name, email, address, city, country, phone } = req.body;
+	const { username, email, address, city, country, phone } = req.body;
 
-	if (name) user.name = name;
+	if (username) user.username = username;
 	if (email) user.email = email;
 	if (address) user.address = address;
 	if (city) user.city = city;
 	if (country) user.country = country;
 	if (phone) user.phone = phone;
 
-	await user.save();
-	res.status(202).json({ message: 'update successfully', user, success: true });
+	await user.save({ validateBeforeSave: false });
+
+	res
+		.status(202)
+		.json(new ApiResponse(202, { user }, 'update successfully'));
 });
 
 // @Desc: update user's password
@@ -129,11 +139,11 @@ const updateUserPassword = AsyncHandler(async (req, res, next) => {
 	const { oldPassword, newPassword } = req.body;
 
 	// 2. check validation - oldpassword and newPassword
-	if (!oldPassword || !newPassword)
+	if ([oldPassword, newPassword].some((item) => item.trim() === ''))
 		throw new ErrorHandler(400, 'fill all the field');
 
 	// const existUser = await User.findById(req.user._id);
-	const existUser = req.user;
+	const existUser = await User.findById(req.user?._id);
 
 	// 3. check the oldpassword is correct or not
 	const isPasswordMatch = await existUser.isPasswordCorrect(oldPassword);
@@ -146,7 +156,7 @@ const updateUserPassword = AsyncHandler(async (req, res, next) => {
 
 	existUser.password = newPassword;
 
-	await existUser.save();
+	await existUser.save({ validateBeforeSave: false });
 	res
 		.status(200)
 		.json({ message: 'password update successfully', success: true });
@@ -162,13 +172,13 @@ const updateUserProfilePic = AsyncHandler(async (req, res, next) => {
 	if (!file) throw new ErrorHandler(404, 'file not present');
 
 	const fileDetail = await fileUploading(file.path);
-	console.log(fileDetail);
+
 	user.profilePic = { public_id: fileDetail.public_id, url: fileDetail.url };
 
-	await user.save();
+	await user.save({ validateBeforeSave: false });
 	res.status(200).json({
 		message: 'profile update successfully',
-		data: user,
+		user,
 		success: true,
 	});
 });

@@ -1,12 +1,9 @@
 // import packages
 import app from './app.js'
-import dotenv from 'dotenv';
 import colors from 'colors';
 import { connectionDB } from './db/db.connection.js';
+import {port} from './constent.js'
 
-// dotenv config
-dotenv.config({ path: './.env' });
-const port = process.env.PORT || 3000;
 
 // db Connection
 connectionDB().then(()=>{

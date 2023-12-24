@@ -32,7 +32,7 @@ router
 // update the password ✅
 router.route('/update-password').put(isAuth, updateUserPassword);
 
-// update the profile pic
+// update the profile pic ✅
 router.route('/updateProfilePicture')
 	.put(isAuth ,singleUpload ,updateUserProfilePic)
 
