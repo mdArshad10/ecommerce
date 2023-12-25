@@ -14,7 +14,7 @@ const getAllCategroy = AsyncHandler(async (req, res, next) => {
 
 // @Desc: get a particular categroy
 // @Method: [get]    api/v1/categroy/:kdfakdfalkdf
-// @Access: private ✅
+// @Access: private
 const getParticularCategroy = AsyncHandler(async (req, res, next) => {
 	const { id } = req.params;
 	const existCategroy = await Categroy.findById(id);
@@ -30,6 +30,10 @@ const getParticularCategroy = AsyncHandler(async (req, res, next) => {
 const createCategroy = AsyncHandler(async (req, res, next) => {
 	const { categroy } = req.body;
 	if (!categroy) throw new ErrorHandler(400, 'categroy is not found');
+
+	const existCategroy = await Categroy.findOne({categroy});
+	if (existCategroy) throw new ErrorHandler(404, 'category already present');
+
 	await Categroy.create({ categroy });
 	res
 		.status(200)
@@ -70,12 +74,14 @@ const updateCategroy = AsyncHandler(async (req, res, next) => {
 
 	// find the product and update the product
 	const products = await Product.find({ categroy: existCategroy._id });
+	console.log(products);
 	for (let i = 0; i < products.length; i++) {
 		const product = products[i];
 		product.categroy = updateCategroy;
 		await product.save();
 	}
-	await existCategroy.updateOne({ categroy: updateCategroy });
+	existCategroy.categroy = updateCategroy;
+	await existCategroy.save();
 	res
 		.status(200)
 		.json({ message: 'categroy update successfully', success: true });

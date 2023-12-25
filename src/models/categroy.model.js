@@ -1,11 +1,14 @@
 import mongoose from 'mongoose';
 
-const categorySchema = new mongoose.Schema({
-	categroy: {
-		type: String,
-		required: [true, 'plz add the categroy'],
-		enum: ['laptop', 'bags', 'phone'],
+const categroySchema = new mongoose.Schema(
+	{
+		categroy: {
+			type: String,
+			required: [true, 'plz add the categroy'],
+			enum:["laptop","bag","mobile"],
+		},
 	},
-},{timestamps:true});
+	{ timestamps: true },
+);
 
-export const Categroy = mongoose.model('Categroy', categorySchema);
+export const Categroy = mongoose.model('Categroy', categroySchema);

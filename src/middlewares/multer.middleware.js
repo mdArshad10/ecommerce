@@ -2,4 +2,19 @@ import multer from 'multer';
 
 const storage = multer.diskStorage({});
 
-export const singleUpload = multer({ storage }).single('avatar');
+const upload = multer({ storage });
+
+const singleUpload = upload.single('avatar');
+
+const multipleUpload = upload.fields([
+	{
+		name: 'main',
+		maxCount: 1,
+	},
+	{
+		name: 'slide2',
+		maxCount: 1,
+	},
+]);
+
+export { singleUpload, multipleUpload };

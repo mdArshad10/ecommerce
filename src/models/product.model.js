@@ -21,8 +21,9 @@ const productSchema = new mongoose.Schema(
 		},
 		categroy: {
 			type: mongoose.Schema.Types.ObjectId,
-			ref: 'Categroy',
+			ref: 'Category',
 		},
+
 		images: [
 			{
 				public_id: {

@@ -14,7 +14,7 @@ const registerUser = AsyncHandler(async (req, res, next) => {
 	//2. check the filed
 	if (
 		[username, email, password, address, city, country, phone].some(
-			(item) => item.trim === '',
+			(item) => item?.trim === '',
 		)
 	) {
 		throw new ErrorHandler(404, 'plz fill all the field');
@@ -36,7 +36,7 @@ const registerUser = AsyncHandler(async (req, res, next) => {
 	});
 
 	// 5. check your is create or not and remove the password
-	const userCreated = await User.findById(newUser._id).select('-password');
+	const userCreated = await User.findById(newUser?._id).select('-password');
 
 	if (!userCreated) throw new ErrorHandler(402, 'user not create');
 
@@ -139,7 +139,7 @@ const updateUserPassword = AsyncHandler(async (req, res, next) => {
 	const { oldPassword, newPassword } = req.body;
 
 	// 2. check validation - oldpassword and newPassword
-	if ([oldPassword, newPassword].some((item) => item.trim() === ''))
+	if ([oldPassword, newPassword].some((item) => item?.trim() === ''))
 		throw new ErrorHandler(400, 'fill all the field');
 
 	// const existUser = await User.findById(req.user._id);

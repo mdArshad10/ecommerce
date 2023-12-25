@@ -73,7 +73,7 @@ const giveTheOrder = AsyncHandler(async (req, res, next) => {
 // @Method: [GET]    api/v1/order/getAll
 // @Access: private
 const getAllOrders = AsyncHandler(async (req, res, next) => {
-	const orders = await Order.find({ user: req.user._id });
+	const orders = await Order.find({ user: req.user?._id });
 	if (orders) throw new ErrorHandler(404, 'no order found');
 
 	res.json(

@@ -34,8 +34,14 @@ import orderRoutes from './routes/order.route.js';
 // routes
 app.use('/api/v1', testRoutes);
 app.use('/api/v1/user', userRoutes);
-app.use('/api/v1', productRoutes);
-app.use('/api/v1', categroyRoutes);
+app.use('/api/v1/product', productRoutes);
+app.use('/api/v1/categroy', categroyRoutes);
 app.use('/api/v1', orderRoutes);
+
+app.use("*",(req,res,next)=>{
+	res.status(404).json({
+		message:"page not found"
+	})
+})
 
 export default app;

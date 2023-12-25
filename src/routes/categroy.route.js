@@ -12,14 +12,14 @@ import { isAuth, isAdmin } from '../middlewares/auth.middleware.js';
 const router = Router();
 
 //router
-// get all category
-router.route('/categroy/getAllCategroy').get(getAllCategroy);
-// create the category
-router.route('/catgory/create').post(isAuth, isAdmin, createCategroy);
+// get all category ✅
+router.route('/getAllCategroy').get(getAllCategroy);
+// create the category ✅
+router.route('/create').post(isAuth, isAdmin, createCategroy);
 
 router
-	.route('/categroy/:id')
-	// get particular categroy
+	.route('/:id') 
+	// get particular categroy ✅
 	.get(isAuth, isAdmin, getParticularCategroy)
 	// update the categroy
 	.put(isAuth, isAdmin, updateCategroy)
