@@ -51,10 +51,11 @@ const deleteCategroy = AsyncHandler(async (req, res, next) => {
 
 	// find the product and update the product
 	const products = await Product.find({ categroy: existCategroy._id });
+	console.log(products);
 	for (let i = 0; i < products.length; i++) {
 		const product = products[i];
 		product.categroy = undefined;
-		await product.save();
+		await product.save({validateBeforeSave:false});
 	}
 	await existCategroy.deleteOne();
 	res
@@ -69,16 +70,16 @@ const updateCategroy = AsyncHandler(async (req, res, next) => {
 	const { id } = req.params;
 	const { updateCategroy } = req.body;
 	const existCategroy = await Categroy.findById(id);
-
+	
 	if (!existCategroy) throw new ErrorHandler(400, 'categroy not found');
 
 	// find the product and update the product
 	const products = await Product.find({ categroy: existCategroy._id });
-	console.log(products);
+	
 	for (let i = 0; i < products.length; i++) {
 		const product = products[i];
 		product.categroy = updateCategroy;
-		await product.save();
+		await product.save({validateBeforeSave:false});
 	}
 	existCategroy.categroy = updateCategroy;
 	await existCategroy.save();

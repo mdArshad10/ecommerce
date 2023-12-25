@@ -21,9 +21,9 @@ router
 	.route('/:id') 
 	// get particular categroy ✅
 	.get(isAuth, isAdmin, getParticularCategroy)
-	// update the categroy
+	// update the categroy ✅
 	.put(isAuth, isAdmin, updateCategroy)
-	// delete the categroy
+	// delete the categroy ✅
 	.delete(isAuth, isAdmin, deleteCategroy);
 // exports
 export default router;

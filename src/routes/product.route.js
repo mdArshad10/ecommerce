@@ -17,7 +17,7 @@ import {
 const router = Router();
 
 // routes
-// get all product
+// get all product ✅
 router.route('/getAllProduct').get(getAllProduct);
 
 // create the product ✅
@@ -27,11 +27,11 @@ router
 
 router
 	.route('/:id')
-	// get a particular product
+	// get a particular product ✅
 	.get(getParticularProduct)
-	// update the particular product
+	// update the particular product ✅
 	.put(isAuth, isAdmin, updateParticularProduct)
-	//delete the product particular
+	//delete the product particular 
 	.delete(isAuth, isAdmin, deleteParticularProduct);
 
 // default
